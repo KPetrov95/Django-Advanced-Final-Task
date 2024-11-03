@@ -2,6 +2,7 @@ from django.core.validators import RegexValidator
 from django.db import models
 
 from bookStore.catalog.mixins import TimestampMixin
+from cloudinary.models import CloudinaryField
 
 
 class Author(TimestampMixin, models.Model):
@@ -9,7 +10,11 @@ class Author(TimestampMixin, models.Model):
     last_name = models.CharField(max_length=50)
     biography = models.TextField(blank=True, null=True)
     birth_date = models.DateField(null=True, blank=True)
-    photo = models.ImageField(blank=True, null=True)
+    photo = CloudinaryField(
+        blank=True,
+        null=True,
+        default='https://res.cloudinary.com/drbktnxop/image/upload/v1730624599/default-avatar-icon-of-social-media-user-vector_nac4sc.jpg'
+    )
 
     @property
     def full_name(self):
@@ -23,7 +28,11 @@ class Book(TimestampMixin, models.Model):
     title = models.CharField(max_length=50, unique=True)
     description = models.TextField(max_length=200, blank=True, null=True)
     price = models.DecimalField(max_digits=7, decimal_places=2)
-    cover = models.ImageField(null=True, blank=True)
+    cover = CloudinaryField(
+        null=True,
+        blank=True,
+        default='https://res.cloudinary.com/drbktnxop/image/upload/v1730624632/Missing-book-cover_ixkada.jpg'
+    )
     isbn = models.CharField(
         max_length=13,
         unique=True,
