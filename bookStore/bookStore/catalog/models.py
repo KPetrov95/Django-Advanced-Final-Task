@@ -11,6 +11,13 @@ class Author(TimestampMixin, models.Model):
     birth_date = models.DateField(null=True, blank=True)
     photo = models.ImageField(blank=True, null=True)
 
+    @property
+    def full_name(self):
+        return f'{self.first_name} {self.last_name}'
+
+    @property
+    def total_books(self):
+        return self.books.count()
 
 class Book(TimestampMixin, models.Model):
     title = models.CharField(max_length=50, unique=True)
@@ -29,7 +36,7 @@ class Book(TimestampMixin, models.Model):
         help_text="Enter a valid 10 or 13 digit ISBN"
     )
     author = models.ForeignKey(to='Author', on_delete=models.SET_DEFAULT, default='Unknown', related_name='books')
-    genre = models.ManyToManyField(to='Genre', related_name='books')
+    genre = models.ForeignKey(to='Genre', on_delete=models.SET_DEFAULT, default='Unknown', related_name='books')
     publisher = models.ForeignKey(to='Publisher', on_delete=models.SET_DEFAULT, default='Unknown', related_name='books')
     published_at = models.DateField(null=True, blank=True)
 

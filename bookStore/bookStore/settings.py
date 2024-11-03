@@ -30,6 +30,16 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+MY_APPS = [
+    "bookStore.catalog.apps.CatalogConfig",
+]
+
+TAILWIND = [
+    'tailwind',
+    'theme',
+    'django_browser_reload'
+]
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -37,8 +47,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "bookStore.catalog.apps.CatalogConfig"
-]
+
+] + TAILWIND + MY_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -48,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
 
 ROOT_URLCONF = 'bookStore.urls'
@@ -78,7 +89,7 @@ WSGI_APPLICATION = 'bookStore.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "bookstore",
+        "NAME": "bookstore_db",
         "USER": "postgres",
         "PASSWORD": "admin",
         "HOST": "127.0.0.1",
@@ -127,3 +138,11 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+TAILWIND_APP_NAME = 'theme'
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
+NPM_BIN_PATH = 'C:\\Program Files\\nodejs\\npm.cmd'
