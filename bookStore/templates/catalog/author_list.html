@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto py-8">
+    <h1 class="text-3xl font-bold mb-6 text-center">Authors</h1>
+
+    <!-- Search Bar -->
+    <form method="get" class="mb-6 flex justify-center">
+        {% include 'catalog/author_search.html' %}
+{#        <button type="submit" class="px-4 py-2 bg-orange-300 text-white rounded-r-md hover:bg-orange-600">Search</button>#}
+    </form>
+
+    <!-- Author Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for author in authors %}
+            <div class="bg-white shadow-md rounded-lg p-4 text-center">
+                
+                <!-- Author Photo with Link to Details Page -->
+                <a href="#">
+                    <img src="#" alt="{{ author.full_name }}" class="w-32 h-32 object-cover rounded-full mx-auto mb-4">
+                </a>
+                
+                <!-- Author Full Name -->
+                <h2 class="text-xl font-semibold mb-2">{{ author.full_name }}</h2>
+                
+                <!-- Number of Books -->
+                <p class="text-gray-600">Books: {{ author.book_count }}</p>
+
+                <!-- Link to Author Detail Page -->
+                <a href="#" class="text-blue-500 hover:underline mt-4 inline-block">View Details</a>
+                
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-8">
+        {% if is_paginated %}
+            <div class="flex justify-center">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}&query={{ request.GET.query }}" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 mr-2">Previous</a>
+                {% endif %}
+
+                <span class="px-4 py-2 bg-gray-100 rounded">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}&query={{ request.GET.query }}" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 ml-2">Next</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}
