@@ -14,6 +14,8 @@ from pathlib import Path
 import cloudinary
 import cloudinary.uploader
 from cloudinary.utils import cloudinary_url
+from django.core.files import images
+from django.urls import reverse_lazy
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -33,6 +35,8 @@ ALLOWED_HOSTS = []
 
 MY_APPS = [
     "bookStore.catalog.apps.CatalogConfig",
+    "bookStore.accounts.apps.AccountsConfig",
+    "bookStore.common"
 ]
 
 INSTALLED_APPS = [
@@ -43,6 +47,7 @@ INSTALLED_APPS = [
                      'django.contrib.messages',
                      'django.contrib.staticfiles',
 
+                     'rest_framework',
                      'tailwind',
                      'theme',
                      'django_browser_reload',
@@ -129,7 +134,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -147,8 +152,17 @@ NPM_BIN_PATH = 'C:\\Program Files\\nodejs\\npm.cmd'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 cloudinary.config(
-    cloud_name = "drbktnxop",
-    api_key = "588598925566653",
-    api_secret = "ga5QvZC2eWsUQhCuMq_oX1EgT0I", # Click 'View API Keys' above to copy your API secret
+    cloud_name="drbktnxop",
+    api_key="588598925566653",
+    api_secret="ga5QvZC2eWsUQhCuMq_oX1EgT0I",
     secure=True
 )
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'drbktnxop',
+    'API_KEY': '588598925566653',
+    'API_SECRET': 'ga5QvZC2eWsUQhCuMq_oX1EgT0I',
+}
+
+AUTH_USER_MODEL = 'accounts.AppUser'
+LOGIN_REDIRECT_URL = reverse_lazy('book_list')
+LOGOUT_REDIRECT_URL = reverse_lazy('login')

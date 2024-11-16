@@ -1,43 +1,92 @@
 {% load static tailwind_tags %}
+{% load cloudinary %}
+{% cloudinary "background-img" as bg_url %}
+
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-    <title>Django Tailwind</title>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta http-equiv="X-UA-Compatible" content="ie=edge">
-		{% tailwind_css %}
-	</head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BookStore{% endblock %}</title>
+    {% tailwind_css %}
+    
+    <!-- Define bg-dynamic class inline to prevent purging -->
+    <style>
+        .bg-dynamic {
+            background-image: url("{{ bg_url }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+</head>
+<body lang="en">
 
+    <!-- Navbar -->
 <nav class="bg-orange-300 text-white px-4 py-4">
     <div class="container mx-auto flex items-center justify-between">
-        
+    
         <!-- Site Logo -->
         <div class="text-2xl font-bold">
-            <a href="#">Bookstore</a>
+            <a href="{% url 'home' %}">Bookstore</a>
         </div>
-        
+
         <!-- Center Links -->
         <div class="hidden md:flex space-x-8">
             <a href="{% url 'book_list' %}" class="hover:text-gray-300">Books</a>
-            <a href="#" class="hover:text-gray-300">Authors</a>
-            <a href="#" class="hover:text-gray-300">Genres</a>
+            <a href="{% url 'author_list' %}" class="hover:text-gray-300">Authors</a>
+            <a href="{% url 'genre_list' %}" class="hover:text-gray-300">Genres</a>
         </div>
-        
+
         <!-- Right Links (Dynamic based on authentication) -->
         <div class="flex space-x-4 items-center">
-            {% if user.is_authenticated %}
-                <a href="{% url 'profile' %}" class="hover:text-gray-300">Profile</a>
-                <a href="{% url 'cart' %}" class="hover:text-gray-300">Cart</a>
-                <a href="{% url 'favorites' %}" class="hover:text-gray-300">Favorites</a>
-                <a href="{% url 'logout' %}" class="hover:text-red-400">Logout</a>
-            {% else %}
-                <a href="#" class="hover:text-gray-300">Register</a>
-                <a href="#" class="hover:text-gray-300">Login</a>
-            {% endif %}
+            <!-- Create Dropdown Menu -->
+            <div class="relative">
+                <button onclick="toggleDropdown()" class="hover:text-gray-300 focus:outline-none">Create</button>
+
+                <!-- Dropdown Content (Hidden initially) -->
+                <div id="dropdown-menu"
+                     class="absolute left-0 mt-2 w-40 bg-white text-gray-800 rounded-md shadow-lg hidden">
+                    <a href="{% url 'book_create' %}" class="block px-4 py-2 hover:bg-gray-200">Create Book</a>
+                    <a href="{% url 'author_create' %}" class="block px-4 py-2 hover:bg-gray-200">Create Author</a>
+                    <a href="{% url 'genre_create' %}" class="block px-4 py-2 hover:bg-gray-200">Create Genre</a>
+                </div>
+            </div>
         </div>
+    {% if user.is_authenticated %}
+        <a href="{% url 'profile-details' user.id %}" class="hover:text-gray-300">Profile</a>
+        <a href="#" class="hover:text-gray-300">Cart</a>
+        <a href="#" class="hover:text-gray-300">Favorites</a>
+        <a href="#" class="hover:text-red-400">Logout</a>
+    {% else %}
+        <a href="{% url 'register' %}" class="hover:text-gray-300">Register</a>
+        <a href="{% url 'login' %}" class="hover:text-gray-300">Login</a>
+    {% endif %}
     </div>
 </nav>
-{% block content %}
-{% endblock %}
+
+    <!-- Page Content -->
+    
+    <main class="container mx-auto flex-grow p-6">
+        {% block content %}{% endblock %}
+    </main>
+
+</body>
+    <script>
+    function toggleDropdown() {
+        const dropdown = document.getElementById('dropdown-menu');
+        dropdown.classList.toggle('hidden');
+    }
+
+    // Close dropdown when clicking outside
+    window.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('dropdown-menu');
+        if (!dropdown.contains(e.target) && !e.target.matches('button')) {
+            dropdown.classList.add('hidden');
+        }
+    });
+</script>
 

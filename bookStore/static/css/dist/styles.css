@@ -859,3 +859,8 @@ select {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
 }
+
+.bg-dynamic {
+    @apply bg-cover bg-center bg-no-repeat min-h-screen flex flex-col;
+    background-image: url('https://res.cloudinary.com/drbktnxop/image/upload/v1731248993/background-img.jpg');
+}

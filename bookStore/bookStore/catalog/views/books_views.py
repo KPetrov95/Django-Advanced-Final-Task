@@ -1,6 +1,7 @@
-from django.views.generic import ListView, FormView
+from django.urls import reverse_lazy
+from django.views.generic import ListView, FormView, DetailView, CreateView
 
-from bookStore.catalog.forms import SearchForm
+from bookStore.catalog.forms import SearchForm, BookCreationForm
 from bookStore.catalog.models import Book, Genre, Author
 
 
@@ -45,8 +46,27 @@ class BookListView(ListView, FormView):
         return queryset
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        books = Book.objects.all()
         context['genres'] = Genre.objects.all()
         context['authors'] = Author.objects.all()
-        context['min_price'] = Book.objects.all().order_by('price').first().price
-        context['max_price'] = Book.objects.all().order_by('price').last().price
+        if books:
+            context['min_price'] = books.order_by('price').first().price
+            context['max_price'] = books.order_by('price').last().price
         return context
+
+
+class BookDetailsView(DetailView):
+    model = Book
+    template_name = 'catalog/book_details.html'
+    pk_url_kwarg = 'id'
+
+
+class BookCreateView(CreateView):
+    model = Book
+    form_class = BookCreationForm
+    template_name = 'catalog/book_create.html'  # Adjust this to your template path
+    success_url = reverse_lazy('book_list')  # Adjust this to the correct URL name for your book list
+
+    def form_valid(self, form):
+        # Additional processing if needed
+        return super().form_valid(form)

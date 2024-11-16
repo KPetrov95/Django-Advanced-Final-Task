@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto py-8">
+    <h1 class="text-3xl font-bold mb-6 text-center">Genres</h1>
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {% for genre in genres %}
+            <div class="text-center p-4">
+                <a href="{% url 'genre_details' genre.id %}" class="text-xl font-bold underline hover:text-orange-500">
+                    {{ genre.name }}
+                </a>
+            </div>
+        {% empty %}
+            <p class="text-center text-gray-500 col-span-2">No genres available.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -24,6 +24,11 @@ class Author(TimestampMixin, models.Model):
     def total_books(self):
         return self.books.count()
 
+    def __str__(self):
+        if self.pk == 1:
+            return f'{self.first_name}'
+        return self.full_name
+
 class Book(TimestampMixin, models.Model):
     title = models.CharField(max_length=50, unique=True)
     description = models.TextField(max_length=200, blank=True, null=True)
@@ -44,11 +49,12 @@ class Book(TimestampMixin, models.Model):
         ],
         help_text="Enter a valid 10 or 13 digit ISBN"
     )
-    author = models.ForeignKey(to='Author', on_delete=models.SET_DEFAULT, default='Unknown', related_name='books')
-    genre = models.ForeignKey(to='Genre', on_delete=models.SET_DEFAULT, default='Unknown', related_name='books')
-    publisher = models.ForeignKey(to='Publisher', on_delete=models.SET_DEFAULT, default='Unknown', related_name='books')
+    author = models.ForeignKey(to='Author', on_delete=models.SET_DEFAULT, default=1, related_name='books')
+    genre = models.ForeignKey(to='Genre', on_delete=models.SET_DEFAULT, default=1, related_name='books')
     published_at = models.DateField(null=True, blank=True)
 
+
+    @property
     def formatted_isbn(self):
         """Formats ISBN to a readable form with hyphens."""
         if len(self.isbn) == 13:
@@ -59,6 +65,8 @@ class Book(TimestampMixin, models.Model):
             return f"{self.isbn[:1]}-{self.isbn[1:4]}-{self.isbn[4:9]}-{self.isbn[9]}"
         return self.isbn
 
+    def __str__(self):
+        return f'{self.title}'
 
 class Genre(TimestampMixin, models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -67,7 +75,7 @@ class Genre(TimestampMixin, models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'{self.name} - {self.description}'
+        return f'{self.name}'
 
-class Publisher(TimestampMixin, models.Model):
-    name = models.CharField(max_length=255)
+
+
