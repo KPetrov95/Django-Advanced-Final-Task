@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block content %}
 <div class="container mx-auto py-8">
     <h1 class="text-3xl font-bold mb-6 text-center">Authors</h1>
@@ -16,8 +16,8 @@
             <div class="bg-white shadow-md rounded-lg p-4 text-center">
                 
                 <!-- Author Photo with Link to Details Page -->
-                <a href="#">
-                    <img src="#" alt="{{ author.full_name }}" class="w-32 h-32 object-cover rounded-full mx-auto mb-4">
+                <a href="{% url 'author_details' author.id %}">
+                    <img src="{{ author.photo.url }}" alt="{{ author.full_name }}" class="w-32 h-32 object-cover rounded-full mx-auto mb-4">
                 </a>
                 
                 <!-- Author Full Name -->
@@ -27,7 +27,7 @@
                 <p class="text-gray-600">Books: {{ author.book_count }}</p>
 
                 <!-- Link to Author Detail Page -->
-                <a href="#" class="text-blue-500 hover:underline mt-4 inline-block">View Details</a>
+                <a href="{% url 'author_details' author.id %}" class="text-blue-500 hover:underline mt-4 inline-block">View Details</a>
                 
             </div>
         {% endfor %}

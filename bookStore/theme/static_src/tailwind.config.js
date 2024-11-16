@@ -42,7 +42,11 @@ module.exports = {
         // '../../**/*.py'
     ],
     theme: {
-        extend: {},
+        extend: {
+            backgroundImage: {
+                'dynamic': "url('https://res.cloudinary.com/drbktnxop/image/upload/v1731248993/background-img.jpg')",
+            },
+        },
     },
     plugins: [
         /**
@@ -53,5 +57,8 @@ module.exports = {
         require('@tailwindcss/forms'),
         require('@tailwindcss/typography'),
         require('@tailwindcss/aspect-ratio'),
+    ],
+    safelist: [
+        'bg-dynamic',
     ],
 }
