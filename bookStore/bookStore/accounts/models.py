@@ -6,6 +6,7 @@ from django.db import models
 
 from bookStore.accounts.managers import AppUserManager
 from bookStore.accounts.validators import PhoneDigitsValidator
+from bookStore.catalog.models import Book
 
 
 # Create your models here.
@@ -67,3 +68,4 @@ class UserProfile(models.Model):
         blank=True,
         null=True,
     )
+    favorite_books = models.ManyToManyField(Book, related_name='favorited_by', blank=True)

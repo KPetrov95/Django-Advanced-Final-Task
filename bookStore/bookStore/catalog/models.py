@@ -13,7 +13,8 @@ class Author(TimestampMixin, models.Model):
     photo = CloudinaryField(
         blank=True,
         null=True,
-        default='https://res.cloudinary.com/drbktnxop/image/upload/v1730624599/default-avatar-icon-of-social-media-user-vector_nac4sc.jpg'
+        default='https://res.cloudinary.com/drbktnxop/image/upload/v1730624599/default-avatar-icon-of-social-media'
+                '-user-vector_nac4sc.jpg'
     )
 
     @property
@@ -28,6 +29,15 @@ class Author(TimestampMixin, models.Model):
         if self.pk == 1:
             return f'{self.first_name}'
         return self.full_name
+
+class Genre(TimestampMixin, models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.name}'
 
 class Book(TimestampMixin, models.Model):
     title = models.CharField(max_length=50, unique=True)
@@ -49,10 +59,9 @@ class Book(TimestampMixin, models.Model):
         ],
         help_text="Enter a valid 10 or 13 digit ISBN"
     )
-    author = models.ForeignKey(to='Author', on_delete=models.SET_DEFAULT, default=1, related_name='books')
-    genre = models.ForeignKey(to='Genre', on_delete=models.SET_DEFAULT, default=1, related_name='books')
+    author = models.ForeignKey(Author, on_delete=models.SET_DEFAULT, default=1, related_name='books')
+    genre = models.ForeignKey(Genre, on_delete=models.SET_DEFAULT, default=1, related_name='books')
     published_at = models.DateField(null=True, blank=True)
-
 
     @property
     def formatted_isbn(self):
@@ -67,15 +76,5 @@ class Book(TimestampMixin, models.Model):
 
     def __str__(self):
         return f'{self.title}'
-
-class Genre(TimestampMixin, models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    description = models.TextField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f'{self.name}'
-
 
 
