@@ -29,5 +29,3 @@ class ToggleFavoriteView(APIView):
             profile.favorite_books.add(book)  # Favorite
             return Response({'message': 'Book added to favorites', 'favorite': True}, status=status.HTTP_200_OK)
 
-class FavoriteBooksList(ListAPIView):
-    serializer_class =
