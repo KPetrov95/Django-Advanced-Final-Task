@@ -1,10 +1,15 @@
+from django.contrib.auth import get_user_model
 from django.shortcuts import render
+from django.views.generic import ListView
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
+from django.views.generic import ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+from bookStore.accounts.models import UserProfile
 from bookStore.catalog.models import Book
 
 
@@ -29,3 +34,12 @@ class ToggleFavoriteView(APIView):
             profile.favorite_books.add(book)  # Favorite
             return Response({'message': 'Book added to favorites', 'favorite': True}, status=status.HTTP_200_OK)
 
+
+
+class FavoritesListView(LoginRequiredMixin, ListView):
+    template_name = 'common/favorites-page.html'
+    paginate_by = 5
+    context_object_name = 'favorites'
+
+    def get_queryset(self):
+        return self.request.user.profile.favorite_books.all().order_by('title')

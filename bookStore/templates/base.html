@@ -7,9 +7,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <title>{% block title %}BookStore{% endblock %}</title>
     {% tailwind_css %}
-    
+
     <!-- Define bg-dynamic class inline to prevent purging -->
     <style>
         .bg-dynamic {
@@ -25,10 +26,10 @@
 </head>
 <body lang="en">
 
-    <!-- Navbar -->
+<!-- Navbar -->
 <nav class="bg-orange-300 text-white px-4 py-4">
     <div class="container mx-auto flex items-center justify-between">
-    
+
         <!-- Site Logo -->
         <div class="text-2xl font-bold">
             <a href="{% url 'home' %}">Bookstore</a>
@@ -56,33 +57,33 @@
                 </div>
             </div>
         </div>
-    {% if user.is_authenticated %}
-        <a href="{% url 'profile-details' user.id %}" class="hover:text-gray-300">Profile</a>
-        <a href="#" class="hover:text-gray-300">Cart</a>
-        <a href="#" class="hover:text-gray-300">Favorites</a>
-        <a href="#" class="hover:text-red-400">Logout</a>
-    {% else %}
-        <a href="{% url 'register' %}" class="hover:text-gray-300">Register</a>
-        <a href="{% url 'login' %}" class="hover:text-gray-300">Login</a>
-    {% endif %}
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile-details' user.id %}" class="hover:text-gray-300">Profile</a>
+            <a href="#" class="hover:text-gray-300">Cart</a>
+            <a href="{% url 'favorites' %}" class="hover:text-gray-300">Favorites</a>
+            <a href="#" class="hover:text-red-400">Logout</a>
+        {% else %}
+            <a href="{% url 'register' %}" class="hover:text-gray-300">Register</a>
+            <a href="{% url 'login' %}" class="hover:text-gray-300">Login</a>
+        {% endif %}
     </div>
 </nav>
 
-    <!-- Page Content -->
-    
-    <main class="container mx-auto flex-grow p-6">
-        {% block content %}{% endblock %}
-    </main>
+<!-- Page Content -->
+
+<main class="container mx-auto flex-grow p-6">
+    {% block content %}{% endblock %}
+</main>
 
 </body>
-    <script>
+<script>
     function toggleDropdown() {
         const dropdown = document.getElementById('dropdown-menu');
         dropdown.classList.toggle('hidden');
     }
 
     // Close dropdown when clicking outside
-    window.addEventListener('click', function(e) {
+    window.addEventListener('click', function (e) {
         const dropdown = document.getElementById('dropdown-menu');
         if (!dropdown.contains(e.target) && !e.target.matches('button')) {
             dropdown.classList.add('hidden');

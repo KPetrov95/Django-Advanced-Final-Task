@@ -97,7 +97,7 @@
     favoriteBtn.addEventListener('click', function () {
         const bookId = this.dataset.bookId;
 
-        fetch(`/api/${bookId}/toggle-favorite/`, {
+        fetch(`/api/favorites/${bookId}/toggle/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
