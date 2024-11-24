@@ -1,7 +1,7 @@
 from django.core.validators import RegexValidator
 from django.db import models
 
-from bookStore.catalog.mixins import TimestampMixin
+from bookStore.mixins import TimestampMixin
 from cloudinary.models import CloudinaryField
 
 
