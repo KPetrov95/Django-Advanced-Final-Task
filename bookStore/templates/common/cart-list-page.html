@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mx-auto py-8">
+    <h1 class="text-3xl font-bold mb-6">Your Cart</h1>
+
+    {% if cart_items %}
+        <div class="space-y-4" id="cart-container">
+            {% for item in cart_items %}
+            <div class="flex items-center bg-white shadow-md rounded-lg p-4 cart-item" data-book-id="{{ item.book.id }}">
+                <!-- Book Cover -->
+                <div class="flex-shrink-0 w-24 h-32 bg-gray-200 rounded overflow-hidden p-2 mr-4">
+                    <img src="{{ item.book.cover.url }}" alt="{{ item.book.title }}" class="object-cover w-full h-full">
+                </div>
+
+                <!-- Book Details -->
+                <div class="flex-grow">
+                    <a href="{% url 'book_details' item.book.id %}"><h2 class="text-xl font-semibold text-gray-800">{{ item.book.title }}</h2></a>
+                    <a href="{% url 'author_details' item.book.author.id %}"><p class="text-gray-600">by {{ item.book.author }}</p></a>
+                    <p class="text-gray-500 mt-2 text-sm">Quantity: 
+                        <span id="quantity-{{ item.book.id }}">{{ item.quantity }}</span>
+                    </p>
+                    <p class="text-gray-600" data-price="{{ item.book.price }}">Price: ${{ item.book.price }}</p>
+                </div>
+
+                <!-- Quantity Controls -->
+                <div class="flex flex-col items-end ml-4 space-y-2">
+                    <!-- Reduce Quantity Button -->
+                    <button class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 reduce-quantity-btn"
+                            data-book-id="{{ item.book.id }}">
+                        Reduce Quantity
+                    </button>
+
+                    <!-- Remove from Cart Button -->
+                    <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 remove-item-btn"
+                            data-book-id="{{ item.book.id }}">
+                        Remove from Cart
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Cart Total -->
+        <div class="mt-6 text-right">
+            <h3 class="text-xl font-semibold">
+                Total: $<span id="total-price">{{ total }}</span>
+            </h3>
+        </div>
+
+        <!-- Proceed to Checkout -->
+        <div class="mt-6 flex justify-end">
+            <a href="{% url 'checkout' %}"
+               class="bg-green-500 text-white px-6 py-3 rounded hover:bg-green-600">
+                Proceed to Checkout
+            </a>
+        </div>
+    {% else %}
+        <p class="text-gray-500">Your cart is empty.</p>
+    {% endif %}
+</div>
+
+<script>
+    // Function to calculate and update the total price
+    function updateTotalPrice() {
+        const cartItems = document.querySelectorAll('.cart-item');
+        let total = 0;
+
+        cartItems.forEach(item => {
+            const quantity = parseInt(item.querySelector('[id^="quantity"]').textContent);
+            const price = parseFloat(item.querySelector('[data-price]').dataset.price);
+            total += quantity * price;
+        });
+
+        document.getElementById('total-price').textContent = total.toFixed(2);
+    }
+
+    // Reduce Quantity API Logic
+    document.querySelectorAll('.reduce-quantity-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const bookId = this.dataset.bookId;
+
+            fetch(`/api/cart/${bookId}/reduce/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const quantitySpan = document.getElementById(`quantity-${bookId}`);
+                    quantitySpan.textContent = data.quantity;
+
+                    if (data.quantity === 0) {
+                        this.closest('.cart-item').remove();
+                    }
+
+                    // Update total price dynamically
+                    updateTotalPrice();
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    });
+
+    // Remove Item API Logic
+    document.querySelectorAll('.remove-item-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const bookId = this.dataset.bookId;
+
+            fetch(`/api/cart/${bookId}/remove/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.closest('.cart-item').remove();
+
+                    // Update total price dynamically
+                    updateTotalPrice();
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    });
+</script>
+{% endblock %}

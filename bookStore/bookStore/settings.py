@@ -36,7 +36,8 @@ ALLOWED_HOSTS = []
 MY_APPS = [
     "bookStore.catalog.apps.CatalogConfig",
     "bookStore.accounts.apps.AccountsConfig",
-    "bookStore.common"
+    "bookStore.common",
+    "bookStore.orders",
 ]
 
 INSTALLED_APPS = [

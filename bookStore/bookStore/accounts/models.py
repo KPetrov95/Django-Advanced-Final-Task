@@ -68,4 +68,8 @@ class UserProfile(models.Model):
         blank=True,
         null=True,
     )
-    favorite_books = models.ManyToManyField(Book, related_name='favorited_by', blank=True)
+    favorite_books = models.ManyToManyField(
+        to=Book,
+        related_name='favorited_by',
+        blank=True
+    )

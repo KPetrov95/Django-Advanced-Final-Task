@@ -26,8 +26,8 @@
                         </div>
 
                         <!-- Add to Basket Button -->
-                        <button class="mb-2 bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600 transition">
-                            Add to Basket
+                        <button class="mb-2 bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600 transition add-to-cart-btn" data-book-id="{{ book.id }}">
+                            Add to Cart
                         </button>
 
                         <!-- Remove from Favorites Button -->
@@ -98,5 +98,27 @@
                 });
             });
         });
+    </script>
+        <script>
+        document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const bookId = this.dataset.bookId;
+
+                fetch(`/api/cart/${bookId}/add/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json',
+                    },
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);
+                        console.log('Cart:', data.cart);
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+        });
+
     </script>
 {% endblock %}
