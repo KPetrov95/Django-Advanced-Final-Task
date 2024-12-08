@@ -33,9 +33,11 @@ class Author(TimestampMixin, models.Model):
 class Genre(TimestampMixin, models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
+
+    @property
+    def total_books(self):
+        return self.books.count()
     def __str__(self):
         return f'{self.name}'
 

@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import TemplateView
 from rest_framework import status
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -66,6 +67,39 @@ class BookReviewsAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def put(self, request, book_id, review_id):
+        book = Book.objects.filter(id=book_id).first()
+        if not book:
+            return Response({'error': 'Book not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        review = book.reviews.filter(id=review_id).first()
+        if not review:
+            return Response({'error': 'Review not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if review.user != request.user and not request.user.has_perm('catalog.change_bookreview'):
+            raise PermissionDenied("You do not have permission to edit this review.")
+
+        serializer = ReviewSerializer(review, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, book_id, review_id):
+        book = Book.objects.filter(id=book_id).first()
+        if not book:
+            return Response({'error': 'Book not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        review = book.reviews.filter(id=review_id).first()
+        if not review:
+            return Response({'error': 'Review not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if review.user != request.user and not request.user.has_perm('catalog.delete_bookreview'):
+            raise PermissionDenied("You do not have permission to delete this review.")
+
+        review.delete()
+        return Response({'message': 'Review deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
 
 class AddToCartView(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]  # Allow both authenticated and unauthenticated users
@@ -92,6 +126,7 @@ class AddToCartView(APIView):
 
         return Response({'message': 'Book added to cart', 'cart': cart})
 
+
 class CartListView(TemplateView):
     template_name = 'common/cart-list-page.html'
 
@@ -114,6 +149,7 @@ class CartListView(TemplateView):
         context['cart_items'] = cart_items
         return context
 
+
 class ReduceCartQuantityView(APIView):
     def post(self, request, book_id):
         cart = request.session.get('cart', {})
@@ -126,6 +162,7 @@ class ReduceCartQuantityView(APIView):
             request.session.modified = True
             return Response({'success': True, 'quantity': cart.get(str(book_id), {}).get('quantity', 0)})
         return Response({'success': False, 'message': 'Book not in cart'}, status=400)
+
 
 class RemoveCartItemView(APIView):
     def post(self, request, book_id):

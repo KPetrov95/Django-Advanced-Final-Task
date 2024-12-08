@@ -7,6 +7,7 @@ from django.views.generic.edit import FormView
 from .models import Order, OrderItem
 from .forms import CheckoutForm
 from ..catalog.models import Book
+from .tasks import send_order_confirmation_email
 
 
 from django.views.generic.edit import FormView
@@ -18,9 +19,6 @@ class CheckoutView(FormView):
     form_class = CheckoutForm
     success_url = reverse_lazy('home')
 
-    def send_confirmation_email(self, order):
-        # Mock sending email logic
-        print(f"Order confirmation sent for order {order.id}")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -93,12 +91,8 @@ class CheckoutView(FormView):
         self.request.session['cart'] = {}
         self.request.session.modified = True
 
-        # Send confirmation email (mocked)
-        self.send_confirmation_email(order)
-
+        send_order_confirmation_email.delay(order.id, self.request.user.email)
         return super().form_valid(form)
-
-
 
 
 class OrderListView(LoginRequiredMixin, ListView):

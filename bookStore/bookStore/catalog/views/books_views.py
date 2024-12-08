@@ -60,6 +60,10 @@ class BookDetailsView(DetailView):
     template_name = 'catalog/book_details.html'
     pk_url_kwarg = 'id'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['can_edit_reviews'] = self.request.user.has_perm('catalog.change_bookreview')
+        return context
 
 class BookCreateView(CreateView):
     model = Book

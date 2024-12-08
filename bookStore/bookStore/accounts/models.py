@@ -73,3 +73,6 @@ class UserProfile(models.Model):
         related_name='favorited_by',
         blank=True
     )
+
+    def __str__(self):
+        return self.user.username

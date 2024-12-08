@@ -29,7 +29,7 @@
 
                     <!-- Icons: Add to Basket, Add to Favorites (visible only if authenticated) -->
                     {% if user.is_authenticated %}
-                        <div class="flex justify-center mt-4 space-x-4  add-to-cart-btn" data-book-id="{{ book.id }}" >
+                        <div class="flex justify-center mt-4 space-x-4  add-to-cart-btn" data-book-id="{{ book.id }}">
                             <button class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 ">
                                 Add to Cart
                             </button>
@@ -45,13 +45,13 @@
                         </div>
                     {% endif %}
 
-                    <!-- Edit Book Button (visible only for staff members) -->
-                    {% if user.is_staff %}
-                        <a href="{% url 'edit_book' book.id %}"
-                           class="mt-4 inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                            Edit Book
-                        </a>
-                    {% endif %}
+                    {#                    <!-- Edit Book Button (visible only for staff members) -->#}
+                    {#                    {% if user.is_staff %}#}
+                    {#                        <a href="{% url 'edit_book' book.id %}"#}
+                    {#                           class="mt-4 inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">#}
+                    {#                            Edit Book#}
+                    {#                        </a>#}
+                    {#                    {% endif %}#}
                 </div>
             </div>
 
@@ -62,7 +62,7 @@
             </div>
         </div>
 
-        {#    <!-- Reviews Section -->#}
+        {# Reviews Section #}
         <div class="mt-8">
             <h2 class="text-2xl font-semibold mb-4">Reviews</h2>
 
@@ -92,7 +92,6 @@
                     </button>
                 </div>
             {% endif %}
-
         </div>
     </div>
     <script>
@@ -125,103 +124,157 @@
         });
     </script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const submitReviewButton = document.getElementById('submit-review');
-            const reviewTitleInput = document.getElementById('review-title');
-            const reviewContentInput = document.getElementById('review-content');
+        document.addEventListener('DOMContentLoaded', function () {
             const reviewsContainer = document.getElementById('reviews-container');
-            const bookId = {{ book.id }};
+            const bookId = "{{ book.id }}"; // Assuming book.id is available in the context
 
-            // Fetch and display reviews
-            fetch(`/api/books/${bookId}/reviews/`)
-                .then(response => response.json())
-                .then(data => {
-                    reviewsContainer.innerHTML = ''; // Clear initial loader or placeholder
-                    if (data.length === 0) {
-                        const noReviewsMessage = document.createElement('p');
-                        noReviewsMessage.textContent = 'No reviews yet. Be the first to review this book!';
-                        noReviewsMessage.className = 'text-gray-500';
-                        reviewsContainer.appendChild(noReviewsMessage);
-                    } else {
-                        data.forEach(review => {
-                            reviewsContainer.appendChild(createReviewElement(review));
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching reviews:', error);
-                });
+            // Function to fetch and display reviews
+            function loadReviews() {
+                fetch(`/api/books/${bookId}/reviews/`)
+                    .then(response => response.json())
+                    .then(reviews => {
+                        if (reviews.length > 0) {
+                            reviewsContainer.innerHTML = reviews.map(review => {
+                                const canEditOrDelete =
+                                    "{{ user.is_authenticated }}" === "True" &&
+                                    ("{{ user.username }}" === review.user || "{{ can_edit_reviews }}" === "True");
 
-            // Add new review
-            submitReviewButton.addEventListener('click', () => {
-                const title = reviewTitleInput.value.trim();
-                const content = reviewContentInput.value.trim();
+                                return `
+                        <div class="bg-gray-100 p-4 rounded-lg mb-4" data-review-id="${review.id}">
+                            <p class="text-lg font-semibold text-gray-800">${review.title}</p>
+                            <p class="text-gray-600">${review.content}</p>
+                            <p class="text-sm text-gray-500 mt-2">By ${review.user} on ${new Date(review.created_at).toLocaleDateString()}</p>
+                            ${canEditOrDelete ? `
+                                <button class="edit-review-btn text-blue-500 hover:underline mr-2" data-review-id="${review.id}">Edit</button>
+                                <button class="delete-review-btn text-red-500 hover:underline" data-review-id="${review.id}">Delete</button>
+                            ` : ''}
+                        </div>
+                    `;
+                            }).join('');
+                        } else {
+                            reviewsContainer.innerHTML = '<p class="text-gray-500">No reviews yet. Be the first to review this book!</p>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading reviews:', error);
+                        reviewsContainer.innerHTML = '<p class="text-red-500">Failed to load reviews.</p>';
+                    });
+            }
 
-                if (!title || !content) {
-                    alert('Both title and content are required!');
-                    return;
-                }
+
+            // Function to submit a new review
+            document.getElementById('submit-review').addEventListener('click', function () {
+                const title = document.getElementById('review-title').value;
+                const content = document.getElementById('review-content').value;
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
                 fetch(`/api/books/${bookId}/reviews/`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRFToken': '{{ csrf_token }}',
+                        'X-CSRFToken': csrfToken,
                     },
-                    body: JSON.stringify({title, content}),
+                    body: JSON.stringify({title, content})
                 })
                     .then(response => response.json())
                     .then(data => {
                         if (data.id) {
-                            alert('Review submitted successfully!');
-                            reviewTitleInput.value = '';
-                            reviewContentInput.value = '';
-                            reviewsContainer.appendChild(createReviewElement(data));
+                            loadReviews(); // Reload reviews after successful submission
+                            document.getElementById('review-title').value = '';
+                            document.getElementById('review-content').value = '';
                         } else {
-                            alert('Failed to submit the review. Please try again.');
+                            alert('Failed to add review. Please check your input.');
                         }
                     })
-                    .catch(error => {
-                        console.error('Error submitting review:', error);
-                        alert('Something went wrong. Please try again.');
-                    });
+                    .catch(error => console.error('Error adding review:', error));
+            });
+// Function to edit a review
+            reviewsContainer.addEventListener('click', function (event) {
+                if (event.target.classList.contains('edit-review-btn')) {
+                    const reviewId = event.target.dataset.reviewId;
+                    const reviewElement = document.querySelector(`[data-review-id="${reviewId}"]`);
+
+                    // Retrieve existing title and content
+                    const existingTitle = reviewElement.querySelector('p.text-lg').textContent;
+                    const existingContent = reviewElement.querySelector('p.text-gray-600').textContent;
+
+                    // Show an edit form
+                    reviewElement.innerHTML = `
+            <div class="bg-white p-4 rounded-lg shadow-md">
+                <h3 class="text-lg font-semibold mb-2">Edit Review</h3>
+                <input id="edit-title-${reviewId}" type="text" class="w-full p-2 border border-gray-300 rounded-md mb-4"
+                       value="${existingTitle}" />
+                <textarea id="edit-content-${reviewId}" rows="4" class="w-full p-2 border border-gray-300 rounded-md">${existingContent}</textarea>
+                <div class="flex justify-end space-x-4 mt-4">
+                    <button class="save-edit-btn px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" data-review-id="${reviewId}">
+                        Save
+                    </button>
+                    <button class="cancel-edit-btn px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400" data-review-id="${reviewId}">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        `;
+                }
+
+                // Handle save logic
+                if (event.target.classList.contains('save-edit-btn')) {
+                    const reviewId = event.target.dataset.reviewId;
+                    const newTitle = document.getElementById(`edit-title-${reviewId}`).value;
+                    const newContent = document.getElementById(`edit-content-${reviewId}`).value;
+
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+                    fetch(`/api/books/${bookId}/reviews/${reviewId}/`, {
+                        method: 'PUT',
+                        headers: {
+                            'X-CSRFToken': csrfToken,
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({title: newTitle, content: newContent}),
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                loadReviews(); // Reload the reviews after editing
+                            } else {
+                                alert('Failed to edit review.');
+                            }
+                        })
+                        .catch(error => console.error('Error editing review:', error));
+                }
+
+                // Handle cancel logic
+                if (event.target.classList.contains('cancel-edit-btn')) {
+                    loadReviews(); // Reload the reviews to restore original content
+                }
+            });
+// Function to delete a review
+            reviewsContainer.addEventListener('click', function (event) {
+                if (event.target.classList.contains('delete-review-btn')) {
+                    const reviewId = event.target.dataset.reviewId;
+                    console.log('Review ID:', reviewId);
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+                    fetch(`/api/books/${bookId}/reviews/${reviewId}/`, {
+                        method: 'DELETE',
+                        headers: {'X-CSRFToken': csrfToken},
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                loadReviews();
+                            } else {
+                                alert('Failed to delete review.');
+                            }
+                        })
+                        .catch(error => console.error('Error deleting review:', error));
+                }
             });
 
-            // Helper function to create a review element
-            function createReviewElement(review) {
-                const reviewCard = document.createElement('div');
-                reviewCard.className = 'bg-gray-100 p-4 rounded-lg mb-4';
-
-                // Title
-                const titleElement = document.createElement('p');
-                titleElement.className = 'text-gray-800 font-bold';
-                titleElement.textContent = review.title;
-
-                // User
-                const userElement = document.createElement('p');
-                userElement.className = 'text-gray-800 font-semibold';
-                userElement.textContent = review.user;
-
-                // Content
-                const contentElement = document.createElement('p');
-                contentElement.className = 'text-gray-600';
-                contentElement.textContent = review.content;
-
-                // Timestamp
-                const timestampElement = document.createElement('p');
-                timestampElement.className = 'text-gray-500 text-sm mt-2';
-                timestampElement.textContent = new Date(review.created_at).toLocaleString();
-
-                // Append all elements to the review card
-                reviewCard.appendChild(titleElement);
-                reviewCard.appendChild(userElement);
-                reviewCard.appendChild(contentElement);
-                reviewCard.appendChild(timestampElement);
-
-                return reviewCard;
-            }
+            // Load reviews on page load
+            loadReviews();
         });
     </script>
+
     <script>
         document.querySelectorAll('.add-to-cart-btn').forEach(button => {
             button.addEventListener('click', function () {
