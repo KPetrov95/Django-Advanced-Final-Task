@@ -72,10 +72,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-if DEBUG:
-    MIDDLEWARE += [
-        'django_browser_reload.middleware.BrowserReloadMiddleware',
-    ]
+# if DEBUG:
+#     MIDDLEWARE += [
+#         'django_browser_reload.middleware.BrowserReloadMiddleware',
+#     ]
 
 ROOT_URLCONF = 'bookStore.urls'
 
