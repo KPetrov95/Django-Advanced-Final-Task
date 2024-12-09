@@ -26,42 +26,42 @@
 </head>
 <body lang="en">
 
-<!-- Navbar -->
+
 <nav class="bg-orange-300 text-white px-4 py-4">
     <div class="container mx-auto flex items-center justify-between">
-        <!-- Site Logo -->
+
         <div class="text-2xl font-bold">
             <a href="{% url 'home' %}">Bookstore</a>
         </div>
 
-        <!-- Center Links -->
+
         <div class="hidden md:flex space-x-8">
             <a href="{% url 'book_list' %}" class="hover:text-gray-300">Books</a>
             <a href="{% url 'author_list' %}" class="hover:text-gray-300">Authors</a>
             <a href="{% url 'genre_list' %}" class="hover:text-gray-300">Genres</a>
 
             {% if user.is_staff %}
-            <!-- Create Dropdown Menu -->
-            <div class="relative">
-                <button onclick="toggleDropdown()" class="hover:text-gray-300 focus:outline-none">Create</button>
-                <div id="dropdown-menu"
-                     class="absolute left-0 mt-2 w-40 bg-white text-gray-800 rounded-md shadow-lg hidden">
-                    <a href="{% url 'book_create' %}" class="block px-4 py-2 hover:bg-gray-200">Create Book</a>
-                    <a href="{% url 'author_create' %}" class="block px-4 py-2 hover:bg-gray-200">Create Author</a>
-                    <a href="{% url 'genre_create' %}" class="block px-4 py-2 hover:bg-gray-200">Create Genre</a>
+
+                <div class="relative">
+                    <button onclick="toggleDropdown()" class="hover:text-gray-300 focus:outline-none">Create</button>
+                    <div id="dropdown-menu"
+                         class="absolute left-0 mt-2 w-40 bg-white text-gray-800 rounded-md shadow-lg hidden">
+                        <a href="{% url 'book_create' %}" class="block px-4 py-2 hover:bg-gray-200">Create Book</a>
+                        <a href="{% url 'author_create' %}" class="block px-4 py-2 hover:bg-gray-200">Create Author</a>
+                        <a href="{% url 'genre_create' %}" class="block px-4 py-2 hover:bg-gray-200">Create Genre</a>
+                    </div>
                 </div>
-            </div>
             {% endif %}
         </div>
 
-        <!-- Right Links -->
+
         <div class="flex space-x-4 items-center">
             {% if user.is_authenticated %}
                 <a href="{% url 'profile-details' user.id %}" class="hover:text-gray-300">Profile</a>
                 <a href="{% url 'cart_list' %}" class="hover:text-gray-300">Cart</a>
                 <a href="{% url 'favorites' %}" class="hover:text-gray-300">Favorites</a>
-                <a href="{% url 'logout' %}" 
-                   onclick="event.preventDefault(); document.getElementById('logout-form').submit()" 
+                <a href="{% url 'logout' %}"
+                   onclick="event.preventDefault(); document.getElementById('logout-form').submit()"
                    class="hover:text-red-400">Logout</a>
             {% else %}
                 <a href="{% url 'register' %}" class="hover:text-gray-300">Register</a>
@@ -70,10 +70,6 @@
         </div>
     </div>
 </nav>
-
-
-<!-- Page Content -->
-
 <main class="container mx-auto flex-grow p-6">
     {% block content %}{% endblock %}
 </main>
@@ -81,6 +77,8 @@
     {% csrf_token %}
 </form>
 </body>
+
+
 <script>
     function toggleDropdown() {
         const dropdown = document.getElementById('dropdown-menu');

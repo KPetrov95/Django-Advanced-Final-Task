@@ -6,31 +6,24 @@
         <div class="container mx-auto p-6">
             {% for book in favorites %}
                 <div class="book-card flex items-center bg-white shadow-md rounded-lg p-4 mb-4">
-                    <!-- Book Cover -->
                     <div class="flex-shrink-0 w-32 h-48 bg-gray-200 rounded overflow-hidden p-2 mr-2">
                         <img src="{{ book.cover }}" alt="{{ book.title }}" class="object-cover w-full h-full">
                     </div>
-
-                    <!-- Book Details -->
                     <div class="flex-grow ml-4">
                         <h2 class="text-xl font-semibold text-gray-800">{{ book.title }}</h2>
                         <p class="text-gray-600">by {{ book.author }}</p>
                         <p class="text-gray-500 mt-2 text-sm">{{ book.description }}</p>
                     </div>
 
-                    <!-- Book Price and Buttons -->
                     <div class="flex flex-col items-end ml-4">
-                        <!-- Price -->
                         <div class="text-xl font-semibold text-green-600 mb-4">
                             ${{ book.price }}
                         </div>
 
-                        <!-- Add to Basket Button -->
                         <button class="mb-2 bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600 transition add-to-cart-btn" data-book-id="{{ book.id }}">
                             Add to Cart
                         </button>
 
-                        <!-- Remove from Favorites Button -->
                         <button class="remove-favorite-btn bg-red-500 text-white px-4 py-2 rounded-md"
                                 data-book-id="{{ book.id }}">
                             Remove
@@ -40,7 +33,6 @@
             {% endfor %}
         </div>
 
-        <!-- Pagination -->
         <div class="mt-6">
             <div class="flex justify-between">
                 {% if favorites.has_previous %}

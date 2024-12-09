@@ -7,15 +7,15 @@ class SearchForm(forms.Form):
         label='',
         required=False,
         max_length=10,
-        widget=forms.TextInput(
-            attrs={
-                'placeholder': 'Search...',
-            }
-        )
+        widget=forms.TextInput()
     )
+    def __init__(self, *args, **kwargs):
+        placeholder = kwargs.pop('placeholder', 'Search...')  # Default placeholder
+        super().__init__(*args, **kwargs)
+        self.fields['query'].widget.attrs['placeholder'] = placeholder
 
 
-class BookCreationForm(forms.ModelForm):
+class BookForm(forms.ModelForm):
     class Meta:
         model = Book
         fields = ['title', 'genre', 'author', 'price', 'description', 'isbn', 'cover', 'published_at']
@@ -60,7 +60,7 @@ class BookCreationForm(forms.ModelForm):
         }
 
 
-class GenreCreationForm(forms.ModelForm):
+class GenreForm(forms.ModelForm):
     class Meta:
         model = Genre
         fields = ['name', 'description']
@@ -79,7 +79,7 @@ class GenreCreationForm(forms.ModelForm):
         }
 
 
-class AuthorCreationForm(forms.ModelForm):
+class AuthorForm(forms.ModelForm):
     class Meta:
         model = Author
         fields = ['first_name', 'last_name', 'biography', 'birth_date', 'photo']

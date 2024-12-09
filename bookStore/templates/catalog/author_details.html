@@ -1,35 +1,35 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mx-auto py-8">
-    <!-- Author Name at the Top -->
-    <h1 class="text-3xl font-bold text-center mb-6">{{ author.full_name }}</h1>
-
-    <div class="flex flex-col md:flex-row gap-8">
-        
-        <!-- Left Column: Author Photo and Book List -->
-        <div class="md:w-1/4 flex flex-col items-center">
-            <!-- Author Photo -->
-            <img src="{{ author.photo.url }}" alt="{{ author.full_name }}" class="w-48 h-64 object-cover rounded-md mb-4">
-
-            <!-- Book List -->
-            <h2 class="text-xl font-semibold mt-4">Books by {{ author.full_name }}:</h2>
-            <ul class="mt-2 list-disc list-inside">
-                {% for book in author.books.all %}
-                    <li>
-                        <a href="{% url 'book_details' book.id %}" class="text-blue-500 hover:underline">
-                            {{ book.title }}
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-
-        <!-- Right Column: Author Biography -->
-        <div class="md:w-3/4">
-            <h2 class="text-xl font-semibold mb-2">Biography</h2>
-            <p class="text-gray-700">{{ author.biography }}</p>
+    <div class="container mx-auto py-8">
+        <h1 class="text-3xl font-bold text-center mb-6">{{ author.full_name }}</h1>
+        <div class="flex flex-col md:flex-row gap-8">
+            <div class="md:w-1/4 flex flex-col items-center">
+                <img src="{{ author.photo.url }}" alt="{{ author.full_name }}"
+                     class="w-48 h-64 object-cover rounded-md mb-4">
+                {% if user.is_staff %}
+                    <div class="mt-4">
+                        <a href="{% url 'author_edit' author.id %}"
+                           class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Edit</a>
+                        <a href="{% url 'author_delete' author.id %}"
+                           class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Delete</a>
+                    </div>
+                {% endif %}
+                <h2 class="text-xl font-semibold mt-4">Books by {{ author.full_name }}:</h2>
+                <ul class="mt-2 list-disc list-inside">
+                    {% for book in author.books.all %}
+                        <li>
+                            <a href="{% url 'book_details' book.id %}" class="text-blue-500 hover:underline">
+                                {{ book.title }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="md:w-3/4">
+                <h2 class="text-xl font-semibold mb-2">Biography</h2>
+                <p class="text-gray-700">{{ author.biography }}</p>
+            </div>
         </div>
     </div>
-</div>
 {% endblock %}

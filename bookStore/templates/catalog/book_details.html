@@ -2,32 +2,27 @@
 
 {% block content %}
     <div class="container mx-auto py-8">
-        <!-- Book Title at the Top -->
         <h1 class="text-3xl font-bold text-center mb-6">{{ book.title }}</h1>
 
         <div class="flex flex-col md:flex-row gap-8">
-
-            <!-- Left Column: Book Cover -->
             <div class="md:w-1/4 flex flex-col items-center">
-                <!-- Book Cover -->
                 <img src="{{ book.cover.url }}" alt="{{ book.title }}" class="w-48 h-64 object-cover rounded-md mb-4">
-
-                <!-- Book Details Below Cover -->
+                <div class="mt-4">
+                    {% if user.is_staff %}
+                        <a href="{% url 'book_edit' book.id %}"
+                           class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Edit</a>
+                        <a href="{% url 'book_delete' book.id %}"
+                           class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Delete</a>
+                    {% endif %}
+                </div>
                 <div class="text-center mt-4">
-                    <!-- Author with Link to Author Detail -->
                     <p class="text-lg font-semibold">By:
                         <a href="{% url 'author_details' book.author.id %}" class="text-blue-500 hover:underline">
                             {{ book.author.full_name }}
                         </a>
                     </p>
-
-                    <!-- Price -->
                     <p class="text-gray-600 mt-2">Price: ${{ book.price }}</p>
-
-                    <!-- ISBN -->
                     <p class="text-gray-600 mt-1">ISBN: {{ book.formatted_isbn }}</p>
-
-                    <!-- Icons: Add to Basket, Add to Favorites (visible only if authenticated) -->
                     {% if user.is_authenticated %}
                         <div class="flex justify-center mt-4 space-x-4  add-to-cart-btn" data-book-id="{{ book.id }}">
                             <button class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 ">
@@ -54,8 +49,6 @@
                     {#                    {% endif %}#}
                 </div>
             </div>
-
-            <!-- Right Column: Book Description -->
             <div class="md:w-3/4">
                 <h2 class="text-xl font-semibold mb-2">Description</h2>
                 <p class="text-gray-700">{{ book.description }}</p>
@@ -65,28 +58,18 @@
         {# Reviews Section #}
         <div class="mt-8">
             <h2 class="text-2xl font-semibold mb-4">Reviews</h2>
-
-            <!-- Reviews List -->
             <div id="reviews-container">
                 <p class="text-gray-500">Loading reviews...</p>
             </div>
-
-            <!-- Add Review Section (Visible Only to Authenticated Users) -->
             {% if user.is_authenticated %}
                 <div class="mt-8 bg-white p-4 rounded-lg shadow-md">
                     <h2 class="text-xl font-semibold mb-4">Add a Review</h2>
-
-                    <!-- Review Title -->
                     <h3 class="text-lg font-semibold mb-2">Title</h3>
                     <input id="review-title" type="text" class="w-full p-2 border border-gray-300 rounded-md mb-4"
                            placeholder="Enter the title of your review">
-
-                    <!-- Review Content -->
                     <h3 class="text-lg font-semibold mb-2">Content</h3>
                     <textarea id="review-content" rows="4" class="w-full p-2 border border-gray-300 rounded-md"
                               placeholder="Write your review..."></textarea>
-
-                    <!-- Submit Button -->
                     <button id="submit-review" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
                         Submit Review
                     </button>
@@ -94,6 +77,8 @@
             {% endif %}
         </div>
     </div>
+    
+    
     <script>
         const favoriteBtn = document.getElementById('favorite-btn');
 
@@ -126,9 +111,8 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const reviewsContainer = document.getElementById('reviews-container');
-            const bookId = "{{ book.id }}"; // Assuming book.id is available in the context
-
-            // Function to fetch and display reviews
+            const bookId = "{{ book.id }}";
+            
             function loadReviews() {
                 fetch(`/api/books/${bookId}/reviews/`)
                     .then(response => response.json())
@@ -160,9 +144,7 @@
                         reviewsContainer.innerHTML = '<p class="text-red-500">Failed to load reviews.</p>';
                     });
             }
-
-
-            // Function to submit a new review
+            //submit a new review
             document.getElementById('submit-review').addEventListener('click', function () {
                 const title = document.getElementById('review-title').value;
                 const content = document.getElementById('review-content').value;
@@ -188,7 +170,7 @@
                     })
                     .catch(error => console.error('Error adding review:', error));
             });
-// Function to edit a review
+            //edit a review
             reviewsContainer.addEventListener('click', function (event) {
                 if (event.target.classList.contains('edit-review-btn')) {
                     const reviewId = event.target.dataset.reviewId;
@@ -198,7 +180,7 @@
                     const existingTitle = reviewElement.querySelector('p.text-lg').textContent;
                     const existingContent = reviewElement.querySelector('p.text-gray-600').textContent;
 
-                    // Show an edit form
+                    //edit form with prefilled data
                     reviewElement.innerHTML = `
             <div class="bg-white p-4 rounded-lg shadow-md">
                 <h3 class="text-lg font-semibold mb-2">Edit Review</h3>
@@ -217,7 +199,7 @@
         `;
                 }
 
-                // Handle save logic
+                //save edited review logic
                 if (event.target.classList.contains('save-edit-btn')) {
                     const reviewId = event.target.dataset.reviewId;
                     const newTitle = document.getElementById(`edit-title-${reviewId}`).value;
@@ -243,12 +225,12 @@
                         .catch(error => console.error('Error editing review:', error));
                 }
 
-                // Handle cancel logic
+                //cancel edit logic
                 if (event.target.classList.contains('cancel-edit-btn')) {
                     loadReviews(); // Reload the reviews to restore original content
                 }
             });
-// Function to delete a review
+            //delete a review
             reviewsContainer.addEventListener('click', function (event) {
                 if (event.target.classList.contains('delete-review-btn')) {
                     const reviewId = event.target.dataset.reviewId;
