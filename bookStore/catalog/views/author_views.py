@@ -14,7 +14,7 @@ class AuthorListView(ListView, FormView):
     form_class = SearchForm
 
     def get_queryset(self):
-        queryset = Author.objects.filter(id__gt=1).order_by('id')
+        queryset = Author.objects.all().order_by('id')
 
         author_name = self.request.GET.get('query')
         if author_name:

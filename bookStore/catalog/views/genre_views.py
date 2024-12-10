@@ -11,7 +11,7 @@ class GenreListView(ListView):
     context_object_name = 'genres'
 
     def get_queryset(self):
-        queryset = Genre.objects.filter(id__gt=1)
+        queryset = Genre.objects.all()
         return queryset
 
 
