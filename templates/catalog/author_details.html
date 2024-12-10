@@ -7,14 +7,18 @@
             <div class="md:w-1/4 flex flex-col items-center">
                 <img src="{{ author.photo.url }}" alt="{{ author.full_name }}"
                      class="w-48 h-64 object-cover rounded-md mb-4">
-                {% if user.is_staff %}
+                
                     <div class="mt-4">
+                        {% if 'catalog.change_author' in perms %}
                         <a href="{% url 'author_edit' author.id %}"
                            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Edit</a>
+                        {% endif %}
+                        {% if 'catalog.delete_author' in perms %}
                         <a href="{% url 'author_delete' author.id %}"
                            class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Delete</a>
+                        {% endif %}
                     </div>
-                {% endif %}
+                
                 <h2 class="text-xl font-semibold mt-4">Books by {{ author.full_name }}:</h2>
                 <ul class="mt-2 list-disc list-inside">
                     {% for book in author.books.all %}

@@ -26,8 +26,6 @@ class Author(TimestampMixin, models.Model):
         return self.books.count()
 
     def __str__(self):
-        if self.pk == 1:
-            return f'{self.first_name}'
         return self.full_name
 
 class Genre(TimestampMixin, models.Model):
@@ -61,8 +59,8 @@ class Book(TimestampMixin, models.Model):
         ],
         help_text="Enter a valid 10 or 13 digit ISBN"
     )
-    author = models.ForeignKey(Author, on_delete=models.SET_DEFAULT, default=1, related_name='books')
-    genre = models.ForeignKey(Genre, on_delete=models.SET_DEFAULT, default=1, related_name='books')
+    author = models.ForeignKey(Author, on_delete=models.SET_NULL, related_name='books', null=True)
+    genre = models.ForeignKey(Genre, on_delete=models.SET_NULL, default=1, related_name='books', null=True)
     published_at = models.DateField(null=True, blank=True)
 
     @property

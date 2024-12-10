@@ -8,28 +8,34 @@
             <div class="md:w-1/4 flex flex-col items-center">
                 <img src="{{ book.cover.url }}" alt="{{ book.title }}" class="w-48 h-64 object-cover rounded-md mb-4">
                 <div class="mt-4">
-                    {% if user.is_staff %}
+                    {% if 'catalog.change_book' in perms %}
                         <a href="{% url 'book_edit' book.id %}"
                            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Edit</a>
+                    {% endif %}
+                    {% if 'catalog.delete_book' in perms %}
                         <a href="{% url 'book_delete' book.id %}"
                            class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Delete</a>
                     {% endif %}
                 </div>
                 <div class="text-center mt-4">
                     <p class="text-lg font-semibold">By:
-                        <a href="{% url 'author_details' book.author.id %}" class="text-blue-500 hover:underline">
-                            {{ book.author.full_name }}
-                        </a>
+                        {% if book.author %}
+                            <a href="{% url 'author_details' book.author.id %}" class="text-blue-500 hover:underline">
+                                {{ book.author.full_name }}
+                            </a>
+                        {% else %}
+                            <span class="text-gray-500">Unknown Author</span>
+                        {% endif %}
                     </p>
                     <p class="text-gray-600 mt-2">Price: ${{ book.price }}</p>
                     <p class="text-gray-600 mt-1">ISBN: {{ book.formatted_isbn }}</p>
                     {% if user.is_authenticated %}
-                        <div class="flex justify-center mt-4 space-x-4  add-to-cart-btn" data-book-id="{{ book.id }}">
-                            <button class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 ">
+                        <div class="flex justify-center mt-4 space-x-4">
+                            <button class="add-to-cart-btn px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                                    data-book-id="{{ book.id }}">
                                 Add to Cart
                             </button>
-                            <button id="favorite-btn"
-                                    class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                            <button class="add-to-favorites-btn px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
                                     data-book-id="{{ book.id }}">
                                 {% if book in user.profile.favorite_books.all %}
                                     Remove from Favorites
@@ -39,14 +45,6 @@
                             </button>
                         </div>
                     {% endif %}
-
-                    {#                    <!-- Edit Book Button (visible only for staff members) -->#}
-                    {#                    {% if user.is_staff %}#}
-                    {#                        <a href="{% url 'edit_book' book.id %}"#}
-                    {#                           class="mt-4 inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">#}
-                    {#                            Edit Book#}
-                    {#                        </a>#}
-                    {#                    {% endif %}#}
                 </div>
             </div>
             <div class="md:w-3/4">
@@ -77,42 +75,42 @@
             {% endif %}
         </div>
     </div>
-    
-    
+
+
     <script>
-        const favoriteBtn = document.getElementById('favorite-btn');
+        document.querySelectorAll('.add-to-favorites-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const bookId = this.dataset.bookId;
 
-        favoriteBtn.addEventListener('click', function () {
-            const bookId = this.dataset.bookId;
-
-            fetch(`/api/favorites/${bookId}/toggle/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}',
-                },
-                credentials: 'same-origin',
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.favorite) {
-                        favoriteBtn.textContent = 'Remove from Favorites';
-                        favoriteBtn.classList.replace('bg-orange-500', 'bg-red-500');
-                    } else {
-                        favoriteBtn.textContent = 'Add to Favorites';
-                        favoriteBtn.classList.replace('bg-red-500', 'bg-orange-500');
-                    }
+                fetch(`/api/favorites/${bookId}/toggle/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}',
+                    },
+                    credentials: 'same-origin',
                 })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.favorite) {
+                            this.textContent = 'Remove from Favorites';
+                            this.classList.replace('bg-yellow-500', 'bg-red-500');
+                        } else {
+                            this.textContent = 'Add to Favorites';
+                            this.classList.replace('bg-red-500', 'bg-yellow-500');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            });
         });
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const reviewsContainer = document.getElementById('reviews-container');
             const bookId = "{{ book.id }}";
-            
+
             function loadReviews() {
                 fetch(`/api/books/${bookId}/reviews/`)
                     .then(response => response.json())
@@ -144,6 +142,7 @@
                         reviewsContainer.innerHTML = '<p class="text-red-500">Failed to load reviews.</p>';
                     });
             }
+
             //submit a new review
             document.getElementById('submit-review').addEventListener('click', function () {
                 const title = document.getElementById('review-title').value;
