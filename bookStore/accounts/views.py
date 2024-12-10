@@ -1,14 +1,14 @@
 from django.contrib import messages
-from django.contrib.auth import login, get_user_model
+from django.contrib.auth import login, get_user_model, logout
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import UpdateView, DetailView, DeleteView, CreateView
+from django.views.generic import UpdateView, DetailView, DeleteView, CreateView, View
 
 from bookStore.accounts.forms import ProfileEditForm, AppUserCreationForm
-from bookStore.accounts.models import UserProfile
+from bookStore.accounts.models import UserProfile, AppUser
 
 UserModel = get_user_model()
 
@@ -43,21 +43,23 @@ class ProfileDetailsView(LoginRequiredMixin, DetailView):
     pk_url_kwarg = 'pk'
 
 
-class ProfileDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    model = UserProfile
+class ProfileDeleteView(LoginRequiredMixin, View):
+    model = AppUser
     template_name = 'accounts/profile-delete-page.html'
     success_url = reverse_lazy('login')
 
-    def test_func(self):
-        profile = get_object_or_404(UserProfile, pk=self.kwargs['pk'])
-        return self.request.user == profile.user
+    def get(self, request, *args, **kwargs):
+        user = get_object_or_404(AppUser, pk=kwargs['pk'])
+        return render(request, self.template_name, {'user': user})
 
-    def delete(self, request, *args, **kwargs):
-        profile = self.get_object()
-        profile.user.is_active = False
-        profile.user.save()
-        messages.success(request, "Your account has been deactivated.")
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        user.is_active = False
+        user.save()
+        logout(request)
+        messages.success(request, "Your account has been deactivated. You can no longer log in.")
         return HttpResponseRedirect(self.success_url)
+
 
 class ProfileEditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = UserProfile
