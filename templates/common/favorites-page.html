@@ -1,53 +1,58 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    {% if favorites %}
-        <h1 class="text-2xl font-bold mb-6">Your Favorite Books</h1>
-        <div class="container mx-auto p-6">
-            {% for book in favorites %}
-                <div class="book-card flex items-center bg-white shadow-md rounded-lg p-4 mb-4">
-                    <div class="flex-shrink-0 w-32 h-48 bg-gray-200 rounded overflow-hidden p-2 mr-2">
-                        <img src="{{ book.cover }}" alt="{{ book.title }}" class="object-cover w-full h-full">
-                    </div>
-                    <div class="flex-grow ml-4">
-                        <h2 class="text-xl font-semibold text-gray-800">{{ book.title }}</h2>
-                        <p class="text-gray-600">by {{ book.author }}</p>
-                        <p class="text-gray-500 mt-2 text-sm">{{ book.description }}</p>
-                    </div>
+    <div class="container mx-auto py-8">
+        <h1 class="text-3xl font-bold mb-6">Your Favorite Books</h1>
 
-                    <div class="flex flex-col items-end ml-4">
-                        <div class="text-xl font-semibold text-green-600 mb-4">
-                            ${{ book.price }}
+        {% if favorites %}
+            <div class="space-y-4" id="favorites-container"> <!-- Same layout as cart-container -->
+                {% for book in favorites %}
+                    <div class="flex items-center bg-white shadow-md rounded-lg p-4 book-item" data-book-id="{{ book.id }}">
+                        <div class="flex-shrink-0 w-24 h-32 bg-gray-200 rounded overflow-hidden p-2 mr-4">
+                            <img src="{{ book.cover }}" alt="{{ book.title }}" class="object-cover w-full h-full">
                         </div>
 
-                        <button class="mb-2 bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600 transition add-to-cart-btn" data-book-id="{{ book.id }}">
-                            Add to Cart
-                        </button>
+                        <div class="flex-grow">
+                            <a href="{% url 'book_details' book.id %}"><h2 class="text-xl font-semibold text-gray-800">{{ book.title }}</h2></a>
+                            <a href="{% url 'author_details' book.author.id %}"><p class="text-gray-600">by {{ book.author }}</p></a>
+                            <p class="text-gray-500 mt-2 text-sm">{{ book.description }}</p>
+                        </div>
 
-                        <button class="remove-favorite-btn bg-red-500 text-white px-4 py-2 rounded-md"
-                                data-book-id="{{ book.id }}">
-                            Remove
-                        </button>
+                        <div class="flex flex-col items-end ml-4 space-y-2">
+                            <div class="text-xl font-semibold text-green-600">
+                                ${{ book.price }}
+                            </div>
+
+                            <!-- Add to Cart Button -->
+                            <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition add-to-cart-btn" data-book-id="{{ book.id }}">
+                                Add to Cart
+                            </button>
+
+                            <!-- Remove from Favorites Button -->
+                            <button class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 remove-favorite-btn" data-book-id="{{ book.id }}">
+                                Remove
+                            </button>
+                        </div>
                     </div>
-                </div>
-            {% endfor %}
-        </div>
-
-        <div class="mt-6">
-            <div class="flex justify-between">
-                {% if favorites.has_previous %}
-                    <a href="?page={{ favorites.previous_page_number }}"
-                       class="bg-gray-200 px-4 py-2 rounded-md hover:bg-gray-300">Previous</a>
-                {% endif %}
-                {% if favorites.has_next %}
-                    <a href="?page={{ favorites.next_page_number }}"
-                       class="bg-gray-200 px-4 py-2 rounded-md hover:bg-gray-300">Next</a>
-                {% endif %}
+                {% endfor %}
             </div>
-        </div>
-    {% else %}
-        <p class="text-gray-500">You have no favorite books yet.</p>
-    {% endif %}
+
+            <div class="mt-6">
+                <div class="flex justify-between">
+                    {% if favorites.has_previous %}
+                        <a href="?page={{ favorites.previous_page_number }}"
+                           class="bg-gray-200 px-4 py-2 rounded-md hover:bg-gray-300">Previous</a>
+                    {% endif %}
+                    {% if favorites.has_next %}
+                        <a href="?page={{ favorites.next_page_number }}"
+                           class="bg-gray-200 px-4 py-2 rounded-md hover:bg-gray-300">Next</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            <p class="text-gray-500">You have no favorite books yet.</p>
+        {% endif %}
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -63,7 +68,7 @@
                     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
                     // Send AJAX POST request to remove the book
-                    fetch(`/api/favorites/${bookId}/toggle/`, { // Updated URL structure
+                    fetch(`/api/favorites/${bookId}/toggle/`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -74,7 +79,7 @@
                         .then(data => {
                             if (data.favorite === false) {
                                 // Remove the book card from the DOM
-                                const bookCard = this.closest('.book-card');
+                                const bookCard = this.closest('.book-item');
                                 bookCard.remove();
 
                                 // Show success message (optional)
@@ -90,8 +95,7 @@
                 });
             });
         });
-    </script>
-        <script>
+
         document.querySelectorAll('.add-to-cart-btn').forEach(button => {
             button.addEventListener('click', function () {
                 const bookId = this.dataset.bookId;
@@ -111,6 +115,5 @@
                     .catch(error => console.error('Error:', error));
             });
         });
-
     </script>
 {% endblock %}

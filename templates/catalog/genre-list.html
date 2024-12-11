@@ -4,7 +4,7 @@
 <div class="container mx-auto py-8">
     <h1 class="text-3xl font-bold mb-6 text-center">Genres</h1>
     
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="grid grid-cols-2 gap-8 max-w-4xl mx-auto">
         {% for genre in genres %}
             <div class="text-center p-4">
                 <a href="{% url 'genre_details' genre.id %}" class="text-xl font-bold underline hover:text-orange-500">
