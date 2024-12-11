@@ -55,8 +55,10 @@ starting:
 
         python manage.py runserver
         celery -A bookStore worker --loglevel=info -P eventlet
-    (eventlet is necessary for running celery on Windows)
+        
+   (eventlet is necessary for running celery on Windows)
     If it's problematic for other OS try this:
+    
         celery -A bookStore worker --loglevel=info
 
 
