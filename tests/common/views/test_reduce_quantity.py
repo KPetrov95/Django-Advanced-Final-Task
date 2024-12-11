@@ -16,7 +16,7 @@ class BookstoreIntegrationTests(TestCase):
         self.profile, _ = UserProfile.objects.get_or_create(user=self.user)
 
         # Create test data
-        self.genre = Genre.objects.create(name="Fiction")
+        self.genre = Genre.objects.create(name="FictionTest")
         self.author = Author.objects.create(first_name="Author", last_name="Name")
         self.book = Book.objects.create(
             title="Test Book",

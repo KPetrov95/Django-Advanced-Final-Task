@@ -9,6 +9,7 @@ class SearchForm(forms.Form):
         max_length=10,
         widget=forms.TextInput()
     )
+
     def __init__(self, *args, **kwargs):
         placeholder = kwargs.pop('placeholder', 'Search...')  # Default placeholder
         super().__init__(*args, **kwargs)

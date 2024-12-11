@@ -3,7 +3,6 @@
 {% block content %}
     <div class="container mx-auto py-8 max-w-4xl">
         <h1 class="text-3xl font-bold mb-6 text-center">Profile Details</h1>
-
         <div class="flex flex-col md:flex-row justify-center gap-4 mb-6">
             <a href="{% url 'order_list' %}"
                class="bg-blue-500 text-white px-4 py-2 rounded-md text-center hover:bg-blue-600">
@@ -18,7 +17,6 @@
                 Edit Profile
             </a>
         </div>
-
         <div class="bg-white shadow-md rounded-lg p-6 mb-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -41,7 +39,6 @@
                 </div>
             </div>
         </div>
-
         <div class="flex justify-center mt-6">
             <a href="{% url 'profile-delete' request.user.pk %}"
                class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">

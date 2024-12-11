@@ -9,7 +9,6 @@ class AnnotatedModelAdmin(admin.ModelAdmin):
     annotated_field_name = None  # Override this in child classes
 
     def get_queryset(self, request):
-        # Dynamically annotate total_books and order by it
         queryset = super().get_queryset(request)
         return queryset.annotate(total_books_count=Count('books')).order_by('-total_books_count')
 

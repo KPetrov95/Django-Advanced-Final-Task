@@ -3,13 +3,9 @@
 {% block content %}
     <div class="container mx-auto py-8">
         <h1 class="text-3xl font-bold mb-6 text-center">BOOKS</h1>
-
-        <form method="get" class="mb-6 p-4 bg-gray-100 rounded-lg shadow-md max-w-4xl mx-auto"> <!-- Reverted to previous max-width -->
-            <!-- Wrapping the grid structure for responsive layout -->
-            <div class="flex flex-col md:grid md:grid-cols-4 gap-4"> <!-- Adjusted gap to middle value -->
-
+        <form method="get" class="mb-6 p-4 bg-gray-100 rounded-lg shadow-md max-w-4xl mx-auto">
+            <div class="flex flex-col md:grid md:grid-cols-4 gap-4">
                 {% if books %}
-                    <!-- Price Range Filter (Visible only on small devices) -->
                     <div class="flex flex-col md:hidden">
                         <label for="min_price" class="block font-semibold mb-1">Price Range:</label>
                         <div class="flex items-center space-x-2">
@@ -28,8 +24,6 @@
                         </div>
                     </div>
                 {% endif %}
-
-                <!-- Genre Filter -->
                 <div class="w-full">
                     <label for="genre" class="block font-semibold mb-1">Genre:</label>
                     <select name="genre" id="genre" class="w-full p-2 border border-gray-300 rounded-md">
@@ -40,8 +34,6 @@
                         {% endfor %}
                     </select>
                 </div>
-
-                <!-- Author Filter -->
                 <div class="w-full">
                     <label for="author" class="block font-semibold mb-1">Author:</label>
                     <select name="author" id="author" class="w-full p-2 border border-gray-300 rounded-md">
@@ -52,8 +44,6 @@
                         {% endfor %}
                     </select>
                 </div>
-
-                <!-- Order By Filter -->
                 <div class="w-full">
                     <label for="order_by" class="block font-semibold mb-1">Order By:</label>
                     <select id="order_by" name="order_by" class="w-full p-2 border border-gray-300 rounded-md">
@@ -61,11 +51,7 @@
                         <option value="price" {% if request.GET.order_by == 'price' %}selected{% endif %}>Price</option>
                     </select>
                 </div>
-
-                <!-- Book Search Form (If applicable) -->
                 {% include 'catalog/book-search-form.html' %}
-
-                <!-- Apply Filters Button -->
                 <div class="col-span-4 flex justify-center mt-4">
                     <button type="submit"
                             class="border border-gray-400 px-4 py-2 bg-orange-300 text-white rounded hover:bg-orange-400">
@@ -75,9 +61,8 @@
             </div>
         </form>
     </div>
-
-    <!-- Book Listing -->
-    <div class="grid grid-cols-2 gap-8 max-w-4xl mx-auto"> <!-- Applied max-width to the book section -->
+    
+    <div class="grid grid-cols-2 gap-8 max-w-4xl mx-auto">
         {% for book in books %}
             <div class="bg-white shadow-md rounded-lg p-4 text-center">
                 <div class="w-32 h-48 overflow-hidden mx-auto">
@@ -93,7 +78,7 @@
             </div>
         {% endfor %}
     </div>
-
+    
     <div class="mt-8">
         {% if is_paginated %}
             <div class="flex justify-center">

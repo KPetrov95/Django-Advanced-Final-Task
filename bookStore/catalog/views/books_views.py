@@ -22,26 +22,23 @@ class BookListView(ListView, FormView):
         if book_title:
             queryset = queryset.filter(title__icontains=book_title)
 
-        # Filtering
         genre = self.request.GET.get('genre')
         author = self.request.GET.get('author')
         if genre:
-            queryset = queryset.filter(genre__name=genre)  # Assuming genre is a ForeignKey to Genre model
+            queryset = queryset.filter(genre__name=genre)
         if author:
             queryset = queryset.annotate(
                 full_name=Concat(F('author__first_name'), Value(' '), F('author__last_name'))
-            ).filter(full_name__icontains=author)  # Assuming author is a ForeignKey to Author model
+            ).filter(full_name__icontains=author)
 
-        # Ordering
-        order_by = self.request.GET.get('order_by', 'title')  # Default ordering by title
+        order_by = self.request.GET.get('order_by', 'title')
         if order_by in ['title', 'price']:
             queryset = queryset.order_by(order_by)
 
-        # Get the minimum and maximum price from the request parameters
         min_price = self.request.GET.get('min_price')
         max_price = self.request.GET.get('max_price')
 
-        # Apply price filtering if values are provided
+
         if min_price:
             queryset = queryset.filter(price__gte=min_price)
         if max_price:

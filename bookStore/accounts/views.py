@@ -5,7 +5,7 @@ from django.contrib.auth.views import LoginView
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import UpdateView, DetailView, DeleteView, CreateView, View
+from django.views.generic import UpdateView, DetailView, CreateView, View
 
 from bookStore.accounts.forms import ProfileEditForm, AppUserCreationForm
 from bookStore.accounts.models import UserProfile, AppUser

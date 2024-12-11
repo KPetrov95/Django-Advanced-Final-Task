@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import TemplateView
 from rest_framework import status
@@ -9,7 +8,6 @@ from rest_framework.views import APIView
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from bookStore.accounts.models import UserProfile
 from bookStore.catalog.models import Book
 from bookStore.common.serializers import ReviewSerializer
 
@@ -102,7 +100,7 @@ class BookReviewsAPIView(APIView):
 
 
 class AddToCartView(APIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]  # Allow both authenticated and unauthenticated users
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def post(self, request, book_id):
 
@@ -110,7 +108,6 @@ class AddToCartView(APIView):
 
         cart = request.session.get('cart', {})
 
-        # Add or update the item in the cart
         if str(book_id) in cart:
             cart[str(book_id)]['quantity'] += 1
         else:
@@ -120,7 +117,6 @@ class AddToCartView(APIView):
                  'quantity': 1
                  }
 
-        # Save cart back to session
         request.session['cart'] = cart
         request.session.modified = True
 

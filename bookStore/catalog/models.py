@@ -28,16 +28,18 @@ class Author(TimestampMixin, models.Model):
     def __str__(self):
         return self.full_name
 
+
 class Genre(TimestampMixin, models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True, null=True)
 
-
     @property
     def total_books(self):
         return self.books.count()
+
     def __str__(self):
         return f'{self.name}'
+
 
 class Book(TimestampMixin, models.Model):
     title = models.CharField(max_length=50, unique=True)
@@ -76,5 +78,3 @@ class Book(TimestampMixin, models.Model):
 
     def __str__(self):
         return f'{self.title}'
-
-

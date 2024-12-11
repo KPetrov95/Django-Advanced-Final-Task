@@ -105,8 +105,7 @@
                     });
             });
         });
-    </script>
-    <script>
+
         document.addEventListener('DOMContentLoaded', function () {
             const reviewsContainer = document.getElementById('reviews-container');
             const bookId = "{{ book.id }}";
@@ -254,9 +253,7 @@
             // Load reviews on page load
             loadReviews();
         });
-    </script>
 
-    <script>
         document.querySelectorAll('.add-to-cart-btn').forEach(button => {
             button.addEventListener('click', function () {
                 const bookId = this.dataset.bookId;

@@ -1,29 +1,21 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView
-
-from django.views.generic.edit import FormView
-from .models import Order, OrderItem
-from .forms import CheckoutForm
 from ..catalog.models import Book
 from .tasks import send_order_confirmation_email
-
-
 from django.views.generic.edit import FormView
 from .models import Order, OrderItem
 from .forms import DeliveryDetailsForm, CheckoutForm
+
 
 class CheckoutView(FormView):
     template_name = 'orders/checkout.html'
     form_class = CheckoutForm
     success_url = reverse_lazy('home')
 
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Fetch delivery details from the user's profile if available
         if self.request.user.is_authenticated:
             profile = self.request.user.profile
             delivery_form = DeliveryDetailsForm(initial={
@@ -34,10 +26,8 @@ class CheckoutView(FormView):
         else:
             delivery_form = DeliveryDetailsForm()
 
-        # Add delivery details form to the context
         context['delivery_form'] = delivery_form
 
-        # Fetch cart items
         cart = self.request.session.get('cart', {})
         book_ids = cart.keys()
         books = Book.objects.filter(id__in=book_ids)
@@ -54,7 +44,6 @@ class CheckoutView(FormView):
         return context
 
     def form_valid(self, form):
-        # Validate DeliveryDetailsForm
         delivery_form = DeliveryDetailsForm(self.request.POST)
         if not delivery_form.is_valid():
             form.add_error(None, "Invalid delivery details!")
@@ -62,13 +51,11 @@ class CheckoutView(FormView):
 
         delivery_data = delivery_form.cleaned_data
 
-        # Get cart data from session
         cart = self.request.session.get('cart', {})
         if not cart:
             form.add_error(None, "Your cart is empty!")
             return self.form_invalid(form)
 
-        # Create an order
         order = Order.objects.create(
             user=self.request.user,
             total_price=0,
@@ -78,14 +65,12 @@ class CheckoutView(FormView):
         )
         total_price = 0
 
-        # Add items to the order
         for book_id, item in cart.items():
             book = Book.objects.get(id=book_id)
             quantity = item['quantity']
             OrderItem.objects.create(order=order, book=book, quantity=quantity)
             total_price += book.price * quantity
 
-        # Update total price and clear the cart
         order.total_price = total_price
         order.save()
         self.request.session['cart'] = {}
@@ -101,7 +86,6 @@ class OrderListView(LoginRequiredMixin, ListView):
     context_object_name = 'orders'
 
     def get_queryset(self):
-        # Fetch only the orders of the authenticated user and order them by the most recent
         return Order.objects.filter(user=self.request.user).order_by('-created_at')
 
 

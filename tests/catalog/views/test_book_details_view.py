@@ -7,7 +7,7 @@ from bookStore.catalog.models import Genre, Author, Book
 class BookDetailsViewTests(TestCase):
 
     def setUp(self):
-        self.genre = Genre.objects.create(name="Fiction")
+        self.genre = Genre.objects.create(name="FictionTest")
         self.author = Author.objects.create(first_name="Emily", last_name="Bronte")
         self.book = Book.objects.create(title="Wuthering Heights", genre=self.genre, author=self.author, price=18.99)
 

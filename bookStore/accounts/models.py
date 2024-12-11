@@ -5,7 +5,6 @@ from django.core.validators import MinLengthValidator, RegexValidator
 from django.db import models
 
 from bookStore.accounts.managers import AppUserManager
-from bookStore.accounts.validators import PhoneDigitsValidator
 from bookStore.catalog.models import Book
 
 

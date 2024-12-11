@@ -6,7 +6,7 @@ class AuthorTotalBooksTests(TestCase):
 
     def setUp(self):
         self.author = Author.objects.create(first_name="Jane", last_name="Smith")
-        self.genre = Genre.objects.create(name="Fiction", description="Fictional genre")
+        self.genre = Genre.objects.create(name="FictionTest", description="Fictional genre")
 
     def test_total_books(self):
         Book.objects.create(title="Book 1", isbn="1234567890", author=self.author, genre=self.genre, price=19.99)

@@ -6,7 +6,7 @@ from bookStore.catalog.views.books_views import BookListView, BookDetailsView, B
     BookDeleteView
 from bookStore.catalog.views.genre_views import GenreListView, GenreDetailsView, GenreCreateView, GenreEditView, \
     GenreDeleteView
-from bookStore.common.views import home
+
 
 urlpatterns = [
     path('authors/', include([
